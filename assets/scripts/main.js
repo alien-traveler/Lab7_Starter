@@ -111,13 +111,21 @@ async function getRecipes() {
     // A11. TODO - Pass any errors to the Promise's reject() function
     for (const link in RECIPE_URLS){
       try{
-        const recepie = await fetch(link);
-        const file = await recepie.json();
-        rec.append(file);
-        if(RECIPE_URLS.length == rec.length){
-          saveRecipesToStorage(rec);
-          resolve(rec);
-        }
+        fetch(link).then((response) => 
+        {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          response.json().then( (recipe) => 
+            {
+              rec.append(recipe)
+              if(rec.length >= RECIPE_URLS.length){
+                addRecipesToDocument(rec);
+                saveRecipesToStorage(rec);     
+              }
+            }
+          );
+        });
       }
       catch(error){
         console.error;
