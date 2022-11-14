@@ -48,12 +48,12 @@ self.addEventListener('fetch', function (event) {
       //            network response.
       if (cacheresponse) {
         return cacheresponse;
+      } else {
+        return fetch(event.request).then((fetchresponse) => {
+          cache.put(event.request, fetchresponse.clone());
+          return fetchresponse;
+        });
       }
-
-      return fetch(event.request).then((fetchresponse) => {
-        cache.put(event.request, fetchresponse.clone());
-        return fetchresponse;
-      });
     });
   }));
     
